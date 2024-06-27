@@ -130,7 +130,7 @@ function Login() {
         <Button variant="primary" type="submit" isLoading={isSubmitting}>
           로그인
         </Button>
-        <Button variant="primary">
+        <Button variant="primary" isLoading={isSubmitting}>
           지원하기
         </Button>
       </Container>
