@@ -124,11 +124,14 @@ function Login() {
         </FormControl>
         <Center>
           <Link as={RouterLink} to="/recover-password" color="blue.500">
-            Forgot password?
+            비밀번호를 잊으셨나요?
           </Link>
         </Center>
         <Button variant="primary" type="submit" isLoading={isSubmitting}>
-          Log In
+          로그인
+        </Button>
+        <Button variant="primary">
+          지원하기
         </Button>
       </Container>
     </>
