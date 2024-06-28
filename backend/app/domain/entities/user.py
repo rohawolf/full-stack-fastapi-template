@@ -6,6 +6,11 @@ from email_validator import EmailNotValidError, validate_email
 
 from app.domain.exceptions import InvalidUserDateOfBirthFormat, InvalidUserEmail
 
+user_gender_type = Literal["male", "female", "other"]
+user_status_type = Literal["applied", "pending", "active", "inactive"]
+user_role_type = Literal["admin", "user"]
+user_auth_code_status_type = Literal["pending", "expired"]
+
 
 class UserEntity:
     def __init__(
@@ -15,18 +20,21 @@ class UserEntity:
         hashed_password: str,
         username: str,
         date_of_birth: str,
-        gender: Literal["male", "female", "other"],
+        gender: user_gender_type,
         phone_number: str,
         resume_url: str,
-        status: Literal["applied", "pending", "active", "inactive"] = "applied",
-        role: Literal["admin", "user"] = "user",
+        status: user_status_type = "applied",
+        role: user_role_type = "user",
         created_at: datetime | None,
         updated_at: datetime | None,
     ):
-        self.email = self.validate_email(email)
+        email_ = self.validate_email(email)
+        date_of_birth_ = self.validate_date_of_birth(date_of_birth)
+
+        self.email = email_
         self.hashed_password = hashed_password
         self.username = username
-        self.date_of_birth = self.validate_date_of_birth(date_of_birth)
+        self.date_of_birth = date_of_birth_
         self.gender = gender
         self.phone_number = phone_number
         self.resume_url = resume_url
@@ -62,11 +70,11 @@ class UserEntityFactory:
         hashed_password: str,
         username: str,
         date_of_birth: str,
-        gender: Literal["male", "female", "other"],
+        gender: user_gender_type,
         phone_number: str,
         resume_url: str,
-        status: Literal["applied", "pending", "active", "inactive"] = "applied",
-        role: Literal["admin", "user"] = "user",
+        status: user_status_type = "applied",
+        role: user_role_type = "user",
         created_at: datetime | None,
         updated_at: datetime | None,
     ) -> UserEntity:
@@ -94,7 +102,7 @@ class UserAuthCodeEntity:
         *,
         email: str,
         auth_code: str | None,
-        status: Literal["pending", "expired"] = "pending",
+        status: user_auth_code_status_type = "pending",
         created_at: datetime | None,
         updated_at: datetime | None,
         expired_at: datetime | None,
@@ -115,7 +123,7 @@ class UserAuthCodeEntityFactory:
         *,
         email: str,
         auth_code: str | None,
-        status: Literal["pending", "expired"] = "pending",
+        status: user_auth_code_status_type = "pending",
         created_at: datetime | None,
         updated_at: datetime | None,
         expired_at: datetime | None,
