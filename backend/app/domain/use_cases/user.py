@@ -23,11 +23,11 @@ class UserUseCases(ABC):
         self.user_updated_event = user_updated_event
 
     @abstractmethod
-    def users_catalog(self) -> list[UserEntity]:
+    def get_user_list(self) -> list[UserEntity]:
         raise NotImplementedError
 
     @abstractmethod
-    def user_detail(self, id: str) -> UserEntity:
+    def get_user_one(self, email: str) -> UserEntity:
         raise NotImplementedError
 
     @abstractmethod
@@ -52,11 +52,11 @@ class UserAuthCodeUseCases(ABC):
         self.user_auth_code_updated_event = user_auth_code_updated_event
 
     @abstractmethod
-    def user_auth_codes_catalog(self) -> list[UserAuthCodeEntity]:
+    def get_user_auth_code_list(self) -> list[UserAuthCodeEntity]:
         raise NotImplementedError
 
     @abstractmethod
-    def user_auth_code_detail(self, id: str) -> UserAuthCodeEntity:
+    def get_user_auth_code_one(self, id: str) -> UserAuthCodeEntity:
         raise NotImplementedError
 
     @abstractmethod

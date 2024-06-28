@@ -18,11 +18,11 @@ class FileUseCases(ABC):
         self.file_updated_event = file_updated_event
 
     @abstractmethod
-    def files_catalog(self) -> list[FileEntity]:
+    def get_file_list(self) -> list[FileEntity]:
         raise NotImplementedError
 
     @abstractmethod
-    def file_detail(self, id: str) -> FileEntity:
+    def get_file_one(self, id: str) -> FileEntity:
         raise NotImplementedError
 
     @abstractmethod

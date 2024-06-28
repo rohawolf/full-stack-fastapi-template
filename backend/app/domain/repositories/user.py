@@ -9,7 +9,7 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_email(self, email: str) -> UserEntity:
+    def get_by_email(self, email: str) -> UserEntity | None:
         raise NotImplementedError
 
     @abstractmethod
@@ -27,7 +27,7 @@ class UserAuthCodeRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_id(self, id: str) -> UserAuthCodeEntity:
+    def get_by_id(self, id: str) -> UserAuthCodeEntity | None:
         raise NotImplementedError
 
     @abstractmethod

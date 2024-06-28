@@ -1,0 +1,3 @@
+class FileValidator:
+    # TODO: Implement file validator
+    ...

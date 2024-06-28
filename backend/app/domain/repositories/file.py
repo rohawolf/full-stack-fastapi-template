@@ -9,7 +9,7 @@ class FileRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_id(self, id: str) -> FileEntity:
+    def get_by_id(self, id: str) -> FileEntity | None:
         raise NotImplementedError
 
     @abstractmethod
