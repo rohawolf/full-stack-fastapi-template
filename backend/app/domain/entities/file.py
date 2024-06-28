@@ -27,7 +27,6 @@ class FileEntity:
         extensions: str,
         url: str,
         created_at: datetime | None,
-        updated_at: datetime | None,
     ):
         self.validate_category_extension_map(category, extensions)
 
@@ -39,7 +38,6 @@ class FileEntity:
 
         now_ = datetime.now(UTC)
         self.created_at = created_at or now_
-        self.updated_at = updated_at or now_
 
     @staticmethod
     def validate_category_extension_map(category: str, extension: str) -> None:
@@ -60,7 +58,6 @@ class FileEntityFactory:
         extensions: str,
         url: str,
         created_at: datetime | None,
-        updated_at: datetime | None,
     ) -> FileEntity:
         return FileEntity(
             id=id,
@@ -69,5 +66,4 @@ class FileEntityFactory:
             extensions=extensions,
             url=url,
             created_at=created_at,
-            updated_at=updated_at,
         )

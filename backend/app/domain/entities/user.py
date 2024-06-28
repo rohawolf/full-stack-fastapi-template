@@ -9,7 +9,7 @@ from app.domain.exceptions import InvalidUserDateOfBirthFormat, InvalidUserEmail
 user_gender_type = Literal["male", "female", "other"]
 user_status_type = Literal["applied", "pending", "active", "inactive"]
 user_role_type = Literal["admin", "user"]
-user_auth_code_status_type = Literal["pending", "expired"]
+user_auth_code_status_type = Literal["pending", "authorized", "expired"]
 
 
 class UserEntity:
