@@ -7,3 +7,9 @@ class FileCreatedEvent(ABC):
     @abstractmethod
     def send(self, file: FileEntity) -> bool:
         raise NotImplementedError
+
+
+class FileUpdatedEvent(ABC):
+    @abstractmethod
+    def send(self, file: FileEntity) -> bool:
+        raise NotImplementedError

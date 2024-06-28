@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime, timedelta
 from random import randint
 from typing import Literal
@@ -100,6 +101,7 @@ class UserAuthCodeEntity:
     def __init__(
         self,
         *,
+        id: str,
         email: str,
         auth_code: str | None,
         status: user_auth_code_status_type = "pending",
@@ -107,6 +109,7 @@ class UserAuthCodeEntity:
         updated_at: datetime | None,
         expired_at: datetime | None,
     ):
+        self.id = id
         self.email = email
         self.auth_code = auth_code or str(randint(100000, 999999))
         self.status = status
@@ -121,6 +124,7 @@ class UserAuthCodeEntityFactory:
     @staticmethod
     def create(
         *,
+        id: str | None,
         email: str,
         auth_code: str | None,
         status: user_auth_code_status_type = "pending",
@@ -128,7 +132,10 @@ class UserAuthCodeEntityFactory:
         updated_at: datetime | None,
         expired_at: datetime | None,
     ) -> UserAuthCodeEntity:
+        if id is None:
+            id = f"user_auth_code-{uuid.uuid4()}"
         return UserAuthCodeEntity(
+            id=id,
             email=email,
             auth_code=auth_code,
             status=status,

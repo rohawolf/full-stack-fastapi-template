@@ -1,3 +1,4 @@
+import uuid
 from datetime import UTC, datetime
 
 from app.domain.exceptions import UnsupportedFileCategory, UnsupportedFileExtension
@@ -26,7 +27,9 @@ class FileEntity:
         name: str,
         extensions: str,
         url: str,
+        is_deleted: bool = False,
         created_at: datetime | None,
+        updated_at: datetime | None,
     ):
         self.validate_category_extension_map(category, extensions)
 
@@ -36,8 +39,10 @@ class FileEntity:
         self.extensions = extensions
         self.url = url
 
+        self.is_deleted = is_deleted
         now_ = datetime.now(UTC)
         self.created_at = created_at or now_
+        self.updated_at = updated_at or now_
 
     @staticmethod
     def validate_category_extension_map(category: str, extension: str) -> None:
@@ -52,18 +57,24 @@ class FileEntityFactory:
     @staticmethod
     def create(
         *,
-        id: str,
+        id: str | None,
         category: str,
         name: str,
         extensions: str,
         url: str,
+        is_deleted: bool = False,
         created_at: datetime | None,
+        updated_at: datetime | None,
     ) -> FileEntity:
+        if id is None:
+            id = f"file-{uuid.uuid4()}"
         return FileEntity(
             id=id,
             category=category,
             name=name,
             extensions=extensions,
             url=url,
+            is_deleted=is_deleted,
             created_at=created_at,
+            updated_at=updated_at,
         )
