@@ -22,7 +22,11 @@ class FileUseCases(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_file_one(self, id: str) -> FileEntity:
+    def get_file_one(self, id: str) -> FileEntity | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def validate_file_create_input(self, file: FileEntity) -> dict[(str, str)]:
         raise NotImplementedError
 
     @abstractmethod

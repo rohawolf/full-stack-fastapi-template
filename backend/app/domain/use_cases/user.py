@@ -27,7 +27,11 @@ class UserUseCases(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_user_one(self, email: str) -> UserEntity:
+    def get_user_one(self, email: str) -> UserEntity | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def validate_user_create_input(self, user: UserEntity) -> dict[(str, str)]:
         raise NotImplementedError
 
     @abstractmethod
@@ -56,7 +60,7 @@ class UserAuthCodeUseCases(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_user_auth_code_one(self, id: str) -> UserAuthCodeEntity:
+    def get_user_auth_code_one(self, email: str, auth_code: str) -> UserAuthCodeEntity | None:
         raise NotImplementedError
 
     @abstractmethod

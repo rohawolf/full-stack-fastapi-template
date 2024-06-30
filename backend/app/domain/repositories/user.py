@@ -27,7 +27,9 @@ class UserAuthCodeRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_by_id(self, id: str) -> UserAuthCodeEntity | None:
+    def get_by_email_and_auth_code(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeEntity | None:
         raise NotImplementedError
 
     @abstractmethod

@@ -24,16 +24,16 @@ class FileEntity:
         id: str,
         category: str,
         name: str,
-        extensions: str,
+        extension: str,
         url: str,
         is_deleted: bool = False,
     ):
-        self.validate_category_extension_map(category, extensions)
+        self.validate_category_extension_map(category, extension)
 
         self.id = id
         self.category = category
         self.name = name
-        self.extensions = extensions
+        self.extension = extension
         self.url = url
         self.is_deleted = is_deleted
 
@@ -53,17 +53,21 @@ class FileEntityFactory:
         id: str | None,
         category: str,
         name: str,
-        extensions: str,
+        extension: str | None,
         url: str,
         is_deleted: bool = False,
     ) -> FileEntity:
         if id is None:
             id = f"file-{uuid.uuid4()}"
+
+        if extension is None:
+            extension = name.split(".")[-1]
+
         return FileEntity(
             id=id,
             category=category,
             name=name,
-            extensions=extensions,
+            extension=extension,
             url=url,
             is_deleted=is_deleted,
         )

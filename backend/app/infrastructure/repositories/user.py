@@ -116,9 +116,16 @@ class UserAuthCodeInMemoryRepository(UserAuthCodeRepository):
             for user_auth_code in self.user_auth_codes
         ]
 
-    def get_by_id(self, id: str) -> UserAuthCodeEntity | None:
+    def get_by_email_and_auth_code(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeEntity | None:
         try:
-            user_auth_code = next(filter(lambda p: p["id"] == id, self.user_auth_codes))
+            user_auth_code = next(
+                filter(
+                    lambda p: p["email"] == email and p["auth_code"] == auth_code,
+                    self.user_auth_codes,
+                )
+            )
             return UserAuthCodeEntityFactory.create(**user_auth_code)
         except StopIteration:
             return None
