@@ -59,7 +59,7 @@ class FileInMemoryRepository(FileRepository):
         },
     ]
 
-    def get_all(self) -> list[FileEntity]:
+    def get_all(self, **kwargs: dict[str, Any]) -> list[FileEntity]:
         return [FileEntityFactory.create(**file) for file in self.files]
 
     def get_by_id(self, id: str) -> FileEntity | None:

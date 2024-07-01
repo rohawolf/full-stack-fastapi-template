@@ -1,3 +1,5 @@
+from typing import Any
+
 from app.domain.entities.file import FileEntity
 from app.domain.events.file import FileCreatedEvent, FileUpdatedEvent
 from app.domain.repositories.file import FileRepository
@@ -26,8 +28,8 @@ class FileService(FileUseCases):
             ]
         )
 
-    def get_file_list(self) -> list[FileEntity]:
-        files = self.file_repository.get_all()
+    def get_file_list(self, **kwargs: dict[str, Any]) -> list[FileEntity]:
+        files = self.file_repository.get_all(**kwargs)
         for file in files:
             file.url = self.file_url(file)
         return files

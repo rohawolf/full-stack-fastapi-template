@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from app.domain.entities.user import UserAuthCodeEntity, UserEntity
 from app.domain.events.user import (
@@ -23,7 +24,7 @@ class UserUseCases(ABC):
         self.user_updated_event = user_updated_event
 
     @abstractmethod
-    def get_user_list(self) -> list[UserEntity]:
+    def get_user_list(self, **kwargs: dict[str, Any]) -> list[UserEntity]:
         raise NotImplementedError
 
     @abstractmethod
@@ -42,6 +43,10 @@ class UserUseCases(ABC):
     def update_user(self, user: UserEntity) -> UserEntity:
         raise NotImplementedError
 
+    @abstractmethod
+    def authenticate(self, email: str, password: str) -> UserEntity | None:
+        raise NotImplementedError
+
 
 class UserAuthCodeUseCases(ABC):
     @abstractmethod
@@ -56,16 +61,21 @@ class UserAuthCodeUseCases(ABC):
         self.user_auth_code_updated_event = user_auth_code_updated_event
 
     @abstractmethod
-    def get_user_auth_code_list(self) -> list[UserAuthCodeEntity]:
+    def get_user_auth_code_list(
+        self, **kwargs: dict[str, Any]
+    ) -> list[UserAuthCodeEntity]:
         raise NotImplementedError
 
     @abstractmethod
-    def get_user_auth_code_one(self, email: str, auth_code: str) -> UserAuthCodeEntity | None:
+    def get_user_auth_code_one(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeEntity | None:
         raise NotImplementedError
 
     @abstractmethod
     def register_user_auth_code(
         self,
+        *,
         user_auth_code: UserAuthCodeEntity,
     ) -> UserAuthCodeEntity:
         raise NotImplementedError
@@ -73,6 +83,7 @@ class UserAuthCodeUseCases(ABC):
     @abstractmethod
     def update_user_auth_code(
         self,
+        *,
         user_auth_code: UserAuthCodeEntity,
     ) -> UserAuthCodeEntity:
         raise NotImplementedError

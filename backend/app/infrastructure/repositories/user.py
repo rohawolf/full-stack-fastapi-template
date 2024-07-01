@@ -64,7 +64,7 @@ class UserInMemoryRepository(UserRepository):
         },
     ]
 
-    def get_all(self) -> list[UserEntity]:
+    def get_all(self, **kwargs: dict[str, Any]) -> list[UserEntity]:
         return [UserEntityFactory.create(**user) for user in self.users]
 
     def get_by_email(self, email: str) -> UserEntity | None:
@@ -110,7 +110,7 @@ class UserAuthCodeInMemoryRepository(UserAuthCodeRepository):
         },
     ]
 
-    def get_all(self) -> list[UserAuthCodeEntity]:
+    def get_all(self, **kwargs: dict[str, Any]) -> list[UserAuthCodeEntity]:
         return [
             UserAuthCodeEntityFactory.create(**user_auth_code)
             for user_auth_code in self.user_auth_codes

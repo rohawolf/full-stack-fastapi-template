@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from app.domain.entities.file import FileEntity
 from app.domain.events.file import FileCreatedEvent, FileUpdatedEvent
@@ -18,7 +19,7 @@ class FileUseCases(ABC):
         self.file_updated_event = file_updated_event
 
     @abstractmethod
-    def get_file_list(self) -> list[FileEntity]:
+    def get_file_list(self, **kwargs: dict[str, Any]) -> list[FileEntity]:
         raise NotImplementedError
 
     @abstractmethod

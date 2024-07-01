@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from app.domain.entities.user import UserAuthCodeEntity, UserEntity
 
 
 class UserRepository(ABC):
     @abstractmethod
-    def get_all(self) -> list[UserEntity]:
+    def get_all(self, **kwargs: dict[str, Any]) -> list[UserEntity]:
         raise NotImplementedError
 
     @abstractmethod
@@ -23,7 +24,7 @@ class UserRepository(ABC):
 
 class UserAuthCodeRepository(ABC):
     @abstractmethod
-    def get_all(self) -> list[UserAuthCodeEntity]:
+    def get_all(self, **kwargs: dict[str, Any]) -> list[UserAuthCodeEntity]:
         raise NotImplementedError
 
     @abstractmethod

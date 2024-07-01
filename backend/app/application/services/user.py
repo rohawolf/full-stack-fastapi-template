@@ -1,4 +1,7 @@
+from typing import Any
+
 from app.application.validators.user import UserValidator
+from app.core.security import verify_password
 from app.domain.entities.user import UserAuthCodeEntity, UserEntity
 from app.domain.events.user import (
     UserAuthCodeCreatedEvent,
@@ -19,8 +22,8 @@ class UserService(UserUseCases):
     ):
         super().__init__(user_repository, user_created_event, user_updated_event)
 
-    def get_user_list(self) -> list[UserEntity]:
-        users = self.user_repository.get_all()
+    def get_user_list(self, **kwargs: dict[str, Any]) -> list[UserEntity]:
+        users = self.user_repository.get_all(**kwargs)
         # TODO: some hadling user logic here
         return users
 
@@ -57,6 +60,14 @@ class UserService(UserUseCases):
 
         return user
 
+    def authenticate(self, email: str, password: str) -> UserEntity | None:
+        user = self.user_repository.get_by_email(email)
+        if user is None:
+            return None
+        if not verify_password(password, user.hashed_password):
+            return None
+        return user
+
 
 class UserAuthCodeService(UserAuthCodeUseCases):
     def __init__(
@@ -71,11 +82,15 @@ class UserAuthCodeService(UserAuthCodeUseCases):
             user_auth_code_updated_event,
         )
 
-    def get_user_auth_code_list(self) -> list[UserAuthCodeEntity]:
-        user_auth_codes = self.user_auth_code_repository.get_all()
+    def get_user_auth_code_list(
+        self, **kwargs: dict[str, Any]
+    ) -> list[UserAuthCodeEntity]:
+        user_auth_codes = self.user_auth_code_repository.get_all(**kwargs)
         return user_auth_codes
 
-    def get_user_auth_code_one(self, email: str, auth_code: str) -> UserAuthCodeEntity | None:
+    def get_user_auth_code_one(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeEntity | None:
         user_auth_code = self.user_auth_code_repository.get_by_email_and_auth_code(
             email, auth_code
         )
@@ -83,6 +98,7 @@ class UserAuthCodeService(UserAuthCodeUseCases):
 
     def register_user_auth_code(
         self,
+        *,
         user_auth_code: UserAuthCodeEntity,
     ) -> UserAuthCodeEntity:
         user_auth_code = self.user_auth_code_repository.add(user_auth_code)
@@ -93,6 +109,7 @@ class UserAuthCodeService(UserAuthCodeUseCases):
 
     def update_user_auth_code(
         self,
+        *,
         user_auth_code: UserAuthCodeEntity,
     ) -> UserAuthCodeEntity:
         user_auth_code = self.user_auth_code_repository.update(user_auth_code)

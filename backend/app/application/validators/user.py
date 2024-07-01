@@ -2,7 +2,10 @@ from datetime import datetime
 
 from email_validator import EmailNotValidError, validate_email
 
-from app.domain.exceptions import InvalidUserDateOfBirthFormat, InvalidUserEmail
+from app.domain.exceptions import (
+    InvalidUserDateOfBirthFormat,
+    InvalidUserEmail,
+)
 
 
 class UserValidator:

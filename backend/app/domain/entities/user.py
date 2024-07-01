@@ -3,6 +3,8 @@ from datetime import UTC, datetime, timedelta
 from random import randint
 from typing import Literal
 
+from app.core.security import get_password_hash
+
 user_gender_type = Literal["male", "female", "other"]
 user_status_type = Literal["applied", "pending", "active", "inactive"]
 user_role_type = Literal["admin", "user"]
@@ -14,7 +16,7 @@ class UserEntity:
         self,
         *,
         email: str,
-        password: str,
+        hashed_password: str,
         username: str,
         date_of_birth: str,
         gender: user_gender_type,
@@ -24,7 +26,7 @@ class UserEntity:
         role: user_role_type = "user",
     ):
         self.email = email
-        self.password = password
+        self.hashed_password = hashed_password
         self.username = username
         self.date_of_birth = date_of_birth
         self.gender = gender
@@ -53,7 +55,7 @@ class UserEntityFactory:
 
         return UserEntity(
             email=email,
-            password=password,
+            hashed_password=get_password_hash(password),
             username=username,
             date_of_birth=date_of_birth,
             gender=gender,
