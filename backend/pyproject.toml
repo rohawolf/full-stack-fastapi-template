@@ -44,11 +44,11 @@ build-backend = "poetry.masonry.api"
 
 [tool.mypy]
 strict = true
-exclude = ["venv", ".venv", "alembic"]
+exclude = ["venv", ".venv", "app/adapters/db/migrations"]
 
 [tool.ruff]
 target-version = "py311"
-exclude = ["alembic"]
+exclude = ["app/adapters/db/migrations"]
 
 [tool.ruff.lint]
 select = [

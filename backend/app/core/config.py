@@ -28,8 +28,9 @@ class Settings(BaseSettings):
     )
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
-    # 60 minutes * 24 hours * 8 days = 8 days
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
+    # 60 minutes * 24 hours * 1 days = 1 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
+    TOKEN_ALGORITHM: str = "HS256"
     DOMAIN: str = "localhost"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
@@ -47,6 +48,9 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str
     SENTRY_DSN: HttpUrl | None = None
+
+    # USE_SQLITE: bool = False
+    USE_SQLITE: bool = True
     POSTGRES_SERVER: str
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str
@@ -118,3 +122,9 @@ class Settings(BaseSettings):
 
 
 settings = Settings()  # type: ignore
+
+
+def get_database_uri() -> str:  # pragma: no cover
+    if settings.USE_SQLITE:
+        return "sqlite:///./test.db"
+    return str(settings.SQLALCHEMY_DATABASE_URI)

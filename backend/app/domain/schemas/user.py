@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, EmailStr
 
@@ -14,10 +14,11 @@ class UserCreateInput(BaseModel):
     email: EmailStr
     password: str
     username: str
-    date_of_birth: str
+    date_of_birth: date
     gender: user_gender_type
     phone_number: str
     resume_file_id: str
+    role: user_role_type = "user"
 
     class Config:
         orm_mode = True
@@ -36,12 +37,14 @@ class UserOutput(BaseModel):
     email: EmailStr
     hashed_password: str
     username: str
-    date_of_birth: str
+    date_of_birth: date
     gender: user_gender_type
     phone_number: str
     resume_file_id: str
     status: user_status_type
     role: user_role_type
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
@@ -64,6 +67,8 @@ class UserAuthCodeOutput(BaseModel):
     auth_code: str
     status: user_auth_code_status_type
     expired_at: datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True

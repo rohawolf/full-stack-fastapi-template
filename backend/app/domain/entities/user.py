@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from random import randint
 from typing import Any, Literal, Self
 
@@ -15,7 +15,7 @@ class BaseUser:
     email: str
     hashed_password: str
     username: str
-    date_of_birth: str
+    date_of_birth: date
     gender: user_gender_type
     phone_number: str
     resume_file_id: str | None
@@ -74,7 +74,7 @@ def user_model_factory(
     email: str,
     hashed_password: str,
     username: str,
-    date_of_birth: str,
+    date_of_birth: date,
     gender: user_gender_type,
     phone_number: str,
     resume_file_id: str | None,

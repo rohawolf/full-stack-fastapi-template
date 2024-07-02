@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -18,3 +20,5 @@ class FileOutput(BaseModel):
     extension: str
     url: str
     is_deleted: bool
+    created_at: datetime
+    updated_at: datetime
