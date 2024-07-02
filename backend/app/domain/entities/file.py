@@ -1,6 +1,6 @@
 import uuid
-
-from app.domain.exceptions import UnsupportedFileCategory, UnsupportedFileExtension
+from dataclasses import asdict, dataclass, field
+from typing import Any, Self
 
 available_file_categories_and_extensions = {
     "avatar": [
@@ -17,57 +17,50 @@ available_file_categories_and_extensions = {
 }
 
 
-class FileEntity:
-    def __init__(
-        self,
-        *,
-        id: str,
-        category: str,
-        name: str,
-        extension: str,
-        url: str,
-        is_deleted: bool = False,
-    ):
-        self.validate_category_extension_map(category, extension)
-
-        self.id = id
-        self.category = category
-        self.name = name
-        self.extension = extension
-        self.url = url
-        self.is_deleted = is_deleted
-
-    @staticmethod
-    def validate_category_extension_map(category: str, extension: str) -> None:
-        if category not in available_file_categories_and_extensions:
-            raise UnsupportedFileCategory(category=category)
-
-        if extension not in available_file_categories_and_extensions[category]:
-            raise UnsupportedFileExtension(extension=extension)
+@dataclass
+class BaseFile:
+    id: str
+    category: str
+    name: str
+    extension: str
+    url: str
+    is_deleted: bool = field(default=False)
 
 
-class FileEntityFactory:
-    @staticmethod
-    def create(
-        *,
-        id: str | None,
-        category: str,
-        name: str,
-        extension: str | None,
-        url: str,
-        is_deleted: bool = False,
-    ) -> FileEntity:
-        if id is None:
-            id = f"file-{uuid.uuid4()}"
+@dataclass
+class File(BaseFile):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, File):
+            return False
 
-        if extension is None:
-            extension = name.split(".")[-1]
+        return self.id == other.id
 
-        return FileEntity(
-            id=id,
-            category=category,
-            name=name,
-            extension=extension,
-            url=url,
-            is_deleted=is_deleted,
-        )
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+    @classmethod
+    def from_dict(cls, dict_: dict[str, Any]) -> Self:
+        return cls(**dict_)
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+def file_model_factory(
+    category: str,
+    name: str,
+    extension: str,
+    url: str,
+    is_deleted: bool = False,
+) -> File:
+    if extension is None:
+        extension = name.split(".")[-1]
+
+    return File(
+        id=f"file-{uuid.uuid4()}",
+        category=category,
+        name=name,
+        extension=extension,
+        url=url,
+        is_deleted=is_deleted,
+    )

@@ -1,27 +1,34 @@
-from abc import ABC, abstractmethod
+from app.domain import entities as model
+from app.domain.events.common import Event
 
-from app.domain.entities.user import UserAuthCodeEntity, UserEntity
 
+class UserCreatedEvent(Event):
+    def __init__(self, user: model.User) -> None:
+        self.user = user
 
-class UserCreatedEvent(ABC):
-    @abstractmethod
-    def send(self, user: UserEntity) -> bool:
+    def send(self) -> bool:
         raise NotImplementedError
 
 
-class UserUpdatedEvent(ABC):
-    @abstractmethod
-    def send(self, user: UserEntity) -> bool:
+class UserUpdatedEvent(Event):
+    def __init__(self, user: model.User) -> None:
+        self.user = user
+
+    def send(self) -> bool:
         raise NotImplementedError
 
 
-class UserAuthCodeCreatedEvent(ABC):
-    @abstractmethod
-    def send(self, user_auth_code: UserAuthCodeEntity) -> bool:
+class UserAuthCodeCreatedEvent(Event):
+    def __init__(self, user_auth_code: model.UserAuthCode) -> None:
+        self.user_auth_code = user_auth_code
+
+    def send(self) -> bool:
         raise NotImplementedError
 
 
-class UserAuthCodeUpdatedEvent(ABC):
-    @abstractmethod
-    def send(self, user_auth_code: UserAuthCodeEntity) -> bool:
+class UserAuthCodeUpdatedEvent(Event):
+    def __init__(self, user_auth_code: model.UserAuthCode) -> None:
+        self.user_auth_code = user_auth_code
+
+    def send(self) -> bool:
         raise NotImplementedError

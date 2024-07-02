@@ -1,15 +1,18 @@
-from abc import ABC, abstractmethod
+from app.domain import entities as model
+from app.domain.events.common import Event
 
-from app.domain.entities.file import FileEntity
 
+class FileCreatedEvent(Event):
+    def __init__(self, file: model.File) -> None:
+        self.file = file
 
-class FileCreatedEvent(ABC):
-    @abstractmethod
-    def send(self, file: FileEntity) -> bool:
+    def send(self) -> bool:
         raise NotImplementedError
 
 
-class FileUpdatedEvent(ABC):
-    @abstractmethod
-    def send(self, file: FileEntity) -> bool:
+class FileUpdatedEvent(Event):
+    def __init__(self, file: model.File) -> None:
+        self.file = file
+
+    def send(self) -> bool:
         raise NotImplementedError
