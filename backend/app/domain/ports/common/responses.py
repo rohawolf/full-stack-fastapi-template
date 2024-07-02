@@ -9,7 +9,7 @@ class ResponseTypes:
 
 
 class ResponseFailure:
-    def __init__(self, type_: str, message: str) -> None:
+    def __init__(self, type_: str, message: Exception | str) -> None:
         self.type = type_
         self.message = self._format_message(message)
 

@@ -49,8 +49,8 @@ class File(BaseFile):
 def file_model_factory(
     category: str,
     name: str,
-    extension: str,
     url: str,
+    extension: str | None = None,
     is_deleted: bool = False,
 ) -> File:
     if extension is None:
@@ -60,7 +60,7 @@ def file_model_factory(
         id=f"file-{uuid.uuid4()}",
         category=category,
         name=name,
-        extension=extension,
         url=url,
+        extension=extension,
         is_deleted=is_deleted,
     )

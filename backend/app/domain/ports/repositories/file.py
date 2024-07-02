@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Any
 
 from app.domain import entities as model
 from app.domain.events.file import FileCreatedEvent, FileUpdatedEvent
@@ -29,7 +28,7 @@ class FileRepositoryInterface(ABC):
         files: list[model.File] = self._get_all()
         return files
 
-    def search(self, query: str) -> Any | None:
+    def search(self, query: str) -> list[model.File]:
         return self._search(query)
 
     @abstractmethod

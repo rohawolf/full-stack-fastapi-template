@@ -22,8 +22,11 @@ class UserSqlAlchemyUnitOfWork(UserUnitOfWorkInterface):
         self.users = UserSqlAlchemyRepository(self.session)
         return super().__enter__()
 
-    def __exit__(self) -> None:
-        super().__exit__()
+    def __exit__(
+        self,
+        *args: list[Any],
+    ) -> None:
+        super().__exit__(*args)
         self.session.close()
 
     def _commit(self) -> None:
@@ -42,8 +45,11 @@ class UserAuthCodeSqlAlchemyUnitOfWork(UserAuthCodeUnitOfWorkInterface):
         self.user_auth_codes = UserAuthCodeSqlAlchemyRepository(self.session)
         return super().__enter__()
 
-    def __exit__(self) -> None:
-        super().__exit__()
+    def __exit__(
+        self,
+        *args: list[Any],
+    ) -> None:
+        super().__exit__(*args)
         self.session.close()
 
     def _commit(self) -> None:

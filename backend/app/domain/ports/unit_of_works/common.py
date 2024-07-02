@@ -1,12 +1,15 @@
 import abc
-from typing import Self
+from typing import Any, Self
 
 
 class BaseUnitOfWorkInterface(abc.ABC):
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self) -> None:
+    def __exit__(
+        self,
+        *args: list[Any],
+    ) -> None:
         self.rollback()
 
     def commit(self) -> None:

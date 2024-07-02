@@ -17,7 +17,7 @@ class UserCreateInput(BaseModel):
     date_of_birth: date
     gender: user_gender_type
     phone_number: str
-    resume_file_id: str
+    resume_file_id: str | None
     role: user_role_type = "user"
 
     class Config:
@@ -29,7 +29,8 @@ class UserLoginInput(BaseModel):
     password: str
 
 
-class UserStatusUpdateInput(BaseModel):
+class UserUpdateInput(BaseModel):
+    password: str
     status: user_status_type
 
 

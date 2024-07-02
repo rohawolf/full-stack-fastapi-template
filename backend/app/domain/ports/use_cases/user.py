@@ -11,7 +11,7 @@ from app.domain.schemas.user import (
     UserCreateInput,
     UserLoginInput,
     UserOutput,
-    UserStatusUpdateInput,
+    UserUpdateInput,
 )
 
 
@@ -30,7 +30,7 @@ class UserServiceInterface(abc.ABC):
         return self._list_users()
 
     def update_user_by_email(
-        self, email: str, user: UserStatusUpdateInput
+        self, email: str, user: UserUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
         return self._update_user_by_email(email, user)
 
@@ -59,7 +59,7 @@ class UserServiceInterface(abc.ABC):
 
     @abc.abstractmethod
     def _update_user_by_email(
-        self, email: str, user: UserStatusUpdateInput
+        self, email: str, user: UserUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
         raise NotImplementedError
 
@@ -93,10 +93,12 @@ class UserAuthCodeServiceInterface(abc.ABC):
     ) -> ResponseFailure | ResponseSuccess:
         return self._retrieve_user_auth_code(email, auth_code)
 
-    def update_user_auth_code_by_id(
+    def update_user_auth_code_by_email_and_auth_code(
         self, email: str, auth_code: str, user_auth_code: UserAuthCodeUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
-        return self._update_user_auth_code_by_id(email, auth_code, user_auth_code)
+        return self._update_user_auth_code_by_email_and_auth_code(
+            email, auth_code, user_auth_code
+        )
 
     @abc.abstractmethod
     def _create(
@@ -111,7 +113,7 @@ class UserAuthCodeServiceInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _update_user_auth_code_by_id(
+    def _update_user_auth_code_by_email_and_auth_code(
         self, email: str, auth_code: str, user_auth_code: UserAuthCodeUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
         raise NotImplementedError

@@ -46,7 +46,7 @@ class User(BaseUser):
 class BaseUserAuthCode:
     id: str
     email: str
-    auth_code: str | None
+    auth_code: str
     expired_at: datetime | None
     status: user_auth_code_status_type = field(default="pending")
 
@@ -99,11 +99,11 @@ def user_model_factory(
 
 def user_auth_code_model_factory(
     email: str,
-    auth_code: str | None,
-    expired_at: datetime | None,
+    auth_code: str = "",
+    expired_at: datetime | None = None,
     status: user_auth_code_status_type = "pending",
 ) -> UserAuthCode:
-    if auth_code is None:
+    if not auth_code:
         auth_code = str(randint(100000, 999999))
 
     if expired_at is None:
