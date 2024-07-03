@@ -36,7 +36,6 @@ class UserUpdateInput(BaseModel):
 
 class UserOutput(BaseModel):
     email: EmailStr
-    hashed_password: str
     username: str
     date_of_birth: date
     gender: user_gender_type

@@ -196,7 +196,7 @@ class UserAuthCodeService(UserAuthCodeServiceInterface):
 
             updated = tx.user_auth_codes.get(email, auth_code)
             if existing_user_auth_code != updated:
-                db_user_auth_code_ = UserOutput.model_validate(updated)
+                db_user_auth_code_ = UserAuthCodeOutput.model_validate(updated)
                 return ResponseSuccess(db_user_auth_code_)
 
             return ResponseFailure(

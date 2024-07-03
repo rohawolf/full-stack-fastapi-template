@@ -22,9 +22,12 @@ def parse_cors(v: Any) -> list[str] | str:
     raise ValueError(v)
 
 
+ENV_FILE = ".env.sample"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_ignore_empty=True, extra="ignore"
+        env_file=ENV_FILE, env_ignore_empty=True, extra="ignore"
     )
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
