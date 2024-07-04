@@ -1,3 +1,4 @@
+from app.adapters.events.file import FileDummyCreatedEvent, FileDummyUpdatedEvent
 from app.adapters.unit_of_works.file import FileSqlAlchemyUnitOfWork
 from app.domain.entities.file import file_model_factory
 from app.domain.ports.common.responses import (
@@ -13,8 +14,15 @@ from app.domain.schemas.file import (
 
 
 class FileService(FileServiceInterface):
-    def __init__(self, unit_of_work: FileSqlAlchemyUnitOfWork):
+    def __init__(
+        self,
+        unit_of_work: FileSqlAlchemyUnitOfWork,
+        created_event: FileDummyCreatedEvent,
+        updated_event: FileDummyUpdatedEvent,
+    ):
         self.unit_of_work = unit_of_work
+        self.created_event = created_event
+        self.updated_event = updated_event
 
     def _create(
         self, file: FileCreateInput, url: str
@@ -28,9 +36,10 @@ class FileService(FileServiceInterface):
                 )
                 tx.files.add(new_file)
                 tx.commit()
+                tx.refresh(new_file)
 
-                file_ = tx.files.get(new_file.id)
-                if file_:
+                if new_file:
+                    self.created_event.send(new_file)
                     db_file_ = FileOutput.model_validate(new_file)
                     return ResponseSuccess(db_file_)
                 else:
@@ -41,9 +50,9 @@ class FileService(FileServiceInterface):
         except Exception as exc:
             return ResponseFailure(ResponseTypes.SYSTEM_ERROR, exc)
 
-    def _retrieve_file(self, id_: str) -> ResponseFailure | ResponseSuccess:
+    def _retrieve_file(self, uuid: str) -> ResponseFailure | ResponseSuccess:
         with self.unit_of_work as tx:
-            file_ = tx.files.get(id_)
+            file_ = tx.files.get(uuid)
             if file_ is None or file_.is_deleted:
                 return ResponseFailure(
                     ResponseTypes.RESOURCE_ERROR,
@@ -59,9 +68,9 @@ class FileService(FileServiceInterface):
             db_files = [FileOutput.model_validate(file_) for file_ in files_]
             return ResponseSuccess(db_files)
 
-    def _delete_file_by_id(self, id_: str) -> ResponseFailure | ResponseSuccess:
+    def _delete_file_by_id(self, uuid: str) -> ResponseFailure | ResponseSuccess:
         with self.unit_of_work as tx:
-            existing_file = tx.files.get(id_)
+            existing_file = tx.files.get(uuid)
             if existing_file is None:
                 return ResponseFailure(
                     ResponseTypes.RESOURCE_ERROR,
@@ -69,6 +78,7 @@ class FileService(FileServiceInterface):
                 )
             existing_file.is_deleted = True
             tx.commit()
+            self.updated_event.send(existing_file)
             return ResponseSuccess(
                 value={"detail": "successfully set file.is_deleted=True"},
             )

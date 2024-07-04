@@ -27,7 +27,7 @@ users = sa.Table(
 user_auth_codes = sa.Table(
     "user_auth_codes",
     mapper_registry.metadata,
-    sa.Column("id", sa.String, primary_key=True, index=True),
+    sa.Column("uuid", sa.String, primary_key=True, index=True),
     sa.Column("email", sa.String, nullable=False, index=True),
     sa.Column("auth_code", sa.String, nullable=False, index=True),
     sa.Column("expired_at", sa.DateTime, nullable=False),
@@ -39,7 +39,7 @@ user_auth_codes = sa.Table(
 files = sa.Table(
     "files",
     mapper_registry.metadata,
-    sa.Column("id", sa.String, primary_key=True, index=True),
+    sa.Column("uuid", sa.String, primary_key=True, index=True),
     sa.Column("category", sa.String, nullable=False, index=True),
     sa.Column("name", sa.String, nullable=False),
     sa.Column("extension", sa.String, nullable=False, index=True),

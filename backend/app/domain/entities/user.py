@@ -44,7 +44,7 @@ class User(BaseUser):
 
 @dataclass
 class BaseUserAuthCode:
-    id: str
+    uuid: str
     email: str
     auth_code: str
     expired_at: datetime | None
@@ -60,7 +60,7 @@ class UserAuthCode(BaseUserAuthCode):
         return self.email == other.email and self.auth_code == other.auth_code
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self.uuid)
 
     @classmethod
     def from_dict(cls, dict_: dict[str, Any]) -> Self:
@@ -110,7 +110,7 @@ def user_auth_code_model_factory(
         expired_at = datetime.now(UTC) + timedelta(minutes=10)
 
     return UserAuthCode(
-        id=f"user_auth_code-{uuid.uuid4()}",
+        uuid=f"user_auth_code-{uuid.uuid4()}",
         email=email,
         auth_code=auth_code,
         status=status,

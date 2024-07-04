@@ -1,5 +1,13 @@
+from datetime import UTC, datetime
+
 from pydantic_core import ValidationError
 
+from app.adapters.events.user import (
+    UserAuthCodeDummyCreatedEvent,
+    UserAuthCodeDummyUpdatedEvent,
+    UserDummyCreatedEvent,
+    UserDummyUpdatedEvent,
+)
 from app.adapters.unit_of_works.user import (
     UserAuthCodeSqlAlchemyUnitOfWork,
     UserSqlAlchemyUnitOfWork,
@@ -27,8 +35,15 @@ from app.domain.schemas.user import (
 
 
 class UserService(UserServiceInterface):
-    def __init__(self, unit_of_work: UserSqlAlchemyUnitOfWork):
+    def __init__(
+        self,
+        unit_of_work: UserSqlAlchemyUnitOfWork,
+        created_event: UserDummyCreatedEvent,
+        updated_event: UserDummyUpdatedEvent,
+    ):
         self.unit_of_work = unit_of_work
+        self.created_event = created_event
+        self.updated_event = updated_event
 
     def _create(
         self,
@@ -48,16 +63,17 @@ class UserService(UserServiceInterface):
                 )
                 tx.users.add(new_user)
                 tx.commit()
+                tx.refresh(new_user)
 
-                user_ = tx.users.get(new_user.email)
-                if user_:
+                if new_user:
+                    self.created_event.send(new_user)
                     db_user_ = UserOutput.model_validate(new_user)
                     return ResponseSuccess(db_user_)
-                else:
-                    return ResponseFailure(
-                        ResponseTypes.RESOURCE_ERROR,
-                        message="Fail to create new user",
-                    )
+
+                return ResponseFailure(
+                    ResponseTypes.RESOURCE_ERROR,
+                    message="Fail to create new user",
+                )
         except Exception as exc:
             return ResponseFailure(ResponseTypes.SYSTEM_ERROR, exc)
 
@@ -82,27 +98,29 @@ class UserService(UserServiceInterface):
     def _update_user_by_email(
         self, email: str, user: UserUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
-        with self.unit_of_work as tx:
-            existing_user = tx.users.get(email)
-            if existing_user is None:
-                return ResponseFailure(
-                    ResponseTypes.RESOURCE_ERROR,
-                    message="User not found",
-                )
-            if user.password:
-                existing_user.hashed_password = get_password_hash(user.password)
-            if user.status:
-                existing_user.status = user.status
-            tx.commit()
-            updated_user = tx.users.get(email)
-            if existing_user != updated_user:
-                db_user = UserOutput.model_validate(updated_user)
+        try:
+            with self.unit_of_work as tx:
+                user_to_be_updated = tx.users.get(email)
+                if user_to_be_updated is None:
+                    return ResponseFailure(
+                        ResponseTypes.RESOURCE_ERROR,
+                        message="User not found",
+                    )
+                if user.password:
+                    user_to_be_updated.hashed_password = get_password_hash(
+                        user.password
+                    )
+                if user.status:
+                    user_to_be_updated.status = user.status
+                tx.commit()
+                tx.refresh(user_to_be_updated)
+
+                self.updated_event.send(user_to_be_updated)
+                db_user = UserOutput.model_validate(user_to_be_updated)
                 return ResponseSuccess(db_user)
 
-            return ResponseFailure(
-                ResponseTypes.RESOURCE_ERROR,
-                message="Fail to update user",
-            )
+        except Exception as exc:
+            return ResponseFailure(ResponseTypes.SYSTEM_ERROR, exc)
 
     def _search_user(self, query: str) -> ResponseSuccess:
         with self.unit_of_work as tx:
@@ -110,13 +128,13 @@ class UserService(UserServiceInterface):
             db_users = [UserOutput.model_validate(user_) for user_ in results]
             return ResponseSuccess(value=db_users)
 
-    def _authenticate_user(self, user: UserLoginInput) -> UserOutput | bool:
+    def _authenticate_user(self, user: UserLoginInput) -> UserOutput | None:
         with self.unit_of_work as tx:
             user_ = tx.users.get(user.email)
             if user_ is None or not verify_password(
                 user.password, user_.hashed_password
             ):
-                return False
+                return None
             return UserOutput.model_validate(user_)
 
     def _validate_user_create_input(
@@ -135,8 +153,15 @@ class UserService(UserServiceInterface):
 
 
 class UserAuthCodeService(UserAuthCodeServiceInterface):
-    def __init__(self, unit_of_work: UserAuthCodeSqlAlchemyUnitOfWork):
+    def __init__(
+        self,
+        unit_of_work: UserAuthCodeSqlAlchemyUnitOfWork,
+        created_event: UserAuthCodeDummyCreatedEvent,
+        updated_event: UserAuthCodeDummyUpdatedEvent,
+    ):
         self.unit_of_work = unit_of_work
+        self.created_event = created_event
+        self.updated_event = updated_event
 
     def _create(
         self,
@@ -149,20 +174,18 @@ class UserAuthCodeService(UserAuthCodeServiceInterface):
                 )
                 tx.user_auth_codes.add(new_user_auth_code)
                 tx.commit()
+                tx.refresh(new_user_auth_code)
 
-                user_auth_code_ = tx.user_auth_codes.get(
-                    new_user_auth_code.email,
-                    new_user_auth_code.auth_code,
-                )
-                if user_auth_code_ is None:
-                    return ResponseFailure(
-                        ResponseTypes.RESOURCE_ERROR,
-                        message="Fail to create new user auth code",
+                if new_user_auth_code:
+                    self.created_event.send(new_user_auth_code)
+                    db_user_auth_code_ = UserAuthCodeOutput.model_validate(
+                        new_user_auth_code
                     )
-                db_user_auth_code_ = UserAuthCodeOutput.model_validate(
-                    new_user_auth_code
+                    return ResponseSuccess(db_user_auth_code_)
+                return ResponseFailure(
+                    ResponseTypes.RESOURCE_ERROR,
+                    message="Fail to create new user auth code",
                 )
-                return ResponseSuccess(db_user_auth_code_)
 
         except Exception as exc:
             return ResponseFailure(ResponseTypes.SYSTEM_ERROR, exc)
@@ -184,22 +207,40 @@ class UserAuthCodeService(UserAuthCodeServiceInterface):
     def _update_user_auth_code_by_email_and_auth_code(
         self, email: str, auth_code: str, user_auth_code: UserAuthCodeUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
-        with self.unit_of_work as tx:
-            existing_user_auth_code = tx.user_auth_codes.get(email, auth_code)
-            if existing_user_auth_code is None:
-                return ResponseFailure(
-                    ResponseTypes.RESOURCE_ERROR,
-                    message="User auth code not found",
-                )
-            if user_auth_code.status:
-                existing_user_auth_code.status = user_auth_code.status
+        try:
+            with self.unit_of_work as tx:
+                user_auth_code_to_be_updated = tx.user_auth_codes.get(email, auth_code)
+                if user_auth_code_to_be_updated is None:
+                    return ResponseFailure(
+                        ResponseTypes.RESOURCE_ERROR,
+                        message="User auth code not found",
+                    )
+                if user_auth_code.status:
+                    user_auth_code_to_be_updated.status = user_auth_code.status
 
-            updated = tx.user_auth_codes.get(email, auth_code)
-            if existing_user_auth_code != updated:
-                db_user_auth_code_ = UserAuthCodeOutput.model_validate(updated)
+                tx.commit()
+                tx.refresh(user_auth_code_to_be_updated)
+
+                db_user_auth_code_ = UserAuthCodeOutput.model_validate(
+                    user_auth_code_to_be_updated
+                )
                 return ResponseSuccess(db_user_auth_code_)
 
-            return ResponseFailure(
-                ResponseTypes.RESOURCE_ERROR,
-                message="Fail to update user_auth_code",
-            )
+        except Exception as exc:
+            return ResponseFailure(ResponseTypes.SYSTEM_ERROR, exc)
+
+    def _validate_user_auth_code(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeOutput | None:
+        with self.unit_of_work as tx:
+            user_auth_code_ = tx.user_auth_codes.get(email, auth_code)
+            if user_auth_code_ is None:
+                return None
+
+            expired_at: datetime | None = user_auth_code_.expired_at
+            if expired_at is not None and datetime.now(UTC) >= expired_at.astimezone(
+                UTC
+            ):
+                return None
+
+            return UserAuthCodeOutput.model_validate(user_auth_code_)

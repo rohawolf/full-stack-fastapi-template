@@ -19,7 +19,7 @@ available_file_categories_and_extensions = {
 
 @dataclass
 class BaseFile:
-    id: str
+    uuid: str
     category: str
     name: str
     extension: str
@@ -33,10 +33,10 @@ class File(BaseFile):
         if not isinstance(other, File):
             return False
 
-        return self.id == other.id
+        return self.uuid == other.uuid
 
     def __hash__(self) -> int:
-        return hash(self.id)
+        return hash(self.uuid)
 
     @classmethod
     def from_dict(cls, dict_: dict[str, Any]) -> Self:
@@ -57,7 +57,7 @@ def file_model_factory(
         extension = name.split(".")[-1]
 
     return File(
-        id=f"file-{uuid.uuid4()}",
+        uuid=f"file-{uuid.uuid4()}",
         category=category,
         name=name,
         url=url,

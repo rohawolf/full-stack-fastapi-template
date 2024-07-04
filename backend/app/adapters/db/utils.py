@@ -34,6 +34,7 @@ def init_superuser(session: Session) -> None:
     # SQLModel.metadata.create_all(engine)
 
     users = UserSqlAlchemyRepository(session)
+
     user_ = UserCreateInput(
         email=settings.FIRST_SUPERUSER,
         password=settings.FIRST_SUPERUSER_PASSWORD,

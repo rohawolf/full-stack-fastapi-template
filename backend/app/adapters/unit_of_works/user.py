@@ -14,7 +14,10 @@ from app.domain.ports.unit_of_works.user import (
 
 
 class UserSqlAlchemyUnitOfWork(UserUnitOfWorkInterface):
-    def __init__(self, session_factory: Callable[[], Any]) -> None:
+    def __init__(
+        self,
+        session_factory: Callable[[], Any],
+    ) -> None:
         self.session_factory = session_factory()
 
     def __enter__(self) -> Self:
@@ -35,9 +38,15 @@ class UserSqlAlchemyUnitOfWork(UserUnitOfWorkInterface):
     def rollback(self) -> None:
         self.session.rollback()
 
+    def refresh(self, obj: Any) -> None:
+        self.session.refresh(obj)
+
 
 class UserAuthCodeSqlAlchemyUnitOfWork(UserAuthCodeUnitOfWorkInterface):
-    def __init__(self, session_factory: Callable[[], Any]) -> None:
+    def __init__(
+        self,
+        session_factory: Callable[[], Any],
+    ) -> None:
         self.session_factory = session_factory()
 
     def __enter__(self) -> Self:
@@ -57,3 +66,6 @@ class UserAuthCodeSqlAlchemyUnitOfWork(UserAuthCodeUnitOfWorkInterface):
 
     def rollback(self) -> None:
         self.session.rollback()
+
+    def refresh(self, obj: Any) -> None:
+        self.session.refresh(obj)

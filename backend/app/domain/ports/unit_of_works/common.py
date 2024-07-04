@@ -14,11 +14,6 @@ class BaseUnitOfWorkInterface(abc.ABC):
 
     def commit(self) -> None:
         self._commit()
-        self.publish_events()
-
-    @abc.abstractmethod
-    def publish_events(self) -> None:
-        raise NotImplementedError
 
     @abc.abstractmethod
     def _commit(self) -> None:
@@ -26,4 +21,8 @@ class BaseUnitOfWorkInterface(abc.ABC):
 
     @abc.abstractmethod
     def rollback(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def refresh(self, obj: Any) -> None:
         raise NotImplementedError

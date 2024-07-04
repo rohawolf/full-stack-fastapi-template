@@ -1,12 +1,19 @@
 import abc
 
 from app.domain.ports.common.responses import ResponseFailure, ResponseSuccess
+from app.domain.ports.events import (
+    UserAuthCodeCreatedEventInterface,
+    UserAuthCodeUpdatedEventInterface,
+    UserCreatedEventInterface,
+    UserUpdatedEventInterface,
+)
 from app.domain.ports.unit_of_works.user import (
     UserAuthCodeUnitOfWorkInterface,
     UserUnitOfWorkInterface,
 )
 from app.domain.schemas.user import (
     UserAuthCodeCreateInput,
+    UserAuthCodeOutput,
     UserAuthCodeUpdateInput,
     UserCreateInput,
     UserLoginInput,
@@ -17,8 +24,15 @@ from app.domain.schemas.user import (
 
 class UserServiceInterface(abc.ABC):
     @abc.abstractmethod
-    def __init__(self, unit_of_work: UserUnitOfWorkInterface):
+    def __init__(
+        self,
+        unit_of_work: UserUnitOfWorkInterface,
+        created_event: UserCreatedEventInterface,
+        updated_event: UserUpdatedEventInterface,
+    ):
         self.unit_of_work = unit_of_work
+        self.created_event = created_event
+        self.updated_event = updated_event
 
     def create(self, user: UserCreateInput) -> ResponseFailure | ResponseSuccess:
         return self._create(user)
@@ -37,7 +51,7 @@ class UserServiceInterface(abc.ABC):
     def search_user(self, query: str) -> ResponseSuccess:
         return self._search_user(query)
 
-    def authenticate_user(self, user: UserLoginInput) -> UserOutput | bool:
+    def authenticate_user(self, user: UserLoginInput) -> UserOutput | None:
         return self._authenticate_user(user)
 
     def validate_user_create_input(
@@ -68,7 +82,7 @@ class UserServiceInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _authenticate_user(self, user: UserLoginInput) -> UserOutput | bool:
+    def _authenticate_user(self, user: UserLoginInput) -> UserOutput | None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -80,8 +94,15 @@ class UserServiceInterface(abc.ABC):
 
 class UserAuthCodeServiceInterface(abc.ABC):
     @abc.abstractmethod
-    def __init__(self, unit_of_work: UserAuthCodeUnitOfWorkInterface):
+    def __init__(
+        self,
+        unit_of_work: UserAuthCodeUnitOfWorkInterface,
+        created_event: UserAuthCodeCreatedEventInterface,
+        updated_event: UserAuthCodeUpdatedEventInterface,
+    ):
         self.unit_of_work = unit_of_work
+        self.created_event = created_event
+        self.updated_event = updated_event
 
     def create(
         self, user_auth_code: UserAuthCodeCreateInput
@@ -100,6 +121,11 @@ class UserAuthCodeServiceInterface(abc.ABC):
             email, auth_code, user_auth_code
         )
 
+    def validate_user_auth_code(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeOutput | None:
+        return self._validate_user_auth_code(email, auth_code)
+
     @abc.abstractmethod
     def _create(
         self, user_auth_code: UserAuthCodeCreateInput
@@ -116,4 +142,10 @@ class UserAuthCodeServiceInterface(abc.ABC):
     def _update_user_auth_code_by_email_and_auth_code(
         self, email: str, auth_code: str, user_auth_code: UserAuthCodeUpdateInput
     ) -> ResponseFailure | ResponseSuccess:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _validate_user_auth_code(
+        self, email: str, auth_code: str
+    ) -> UserAuthCodeOutput | None:
         raise NotImplementedError

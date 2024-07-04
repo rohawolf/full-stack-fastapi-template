@@ -1,7 +1,14 @@
 from dependency_injector import containers, providers
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 
+from app.adapters.events.file import FileDummyCreatedEvent, FileDummyUpdatedEvent
+from app.adapters.events.user import (
+    UserAuthCodeDummyCreatedEvent,
+    UserAuthCodeDummyUpdatedEvent,
+    UserDummyCreatedEvent,
+    UserDummyUpdatedEvent,
+)
 from app.adapters.unit_of_works.file import FileSqlAlchemyUnitOfWork
 from app.adapters.unit_of_works.user import (
     UserAuthCodeSqlAlchemyUnitOfWork,
@@ -23,29 +30,43 @@ class Container(containers.DeclarativeContainer):
         ]
     )
 
-    @staticmethod
-    def DEFAULT_SESSION_FACTORY() -> sessionmaker[Session]:
-        return sessionmaker(bind=ENGINE)
+    DEFAULT_SESSION_FACTORY = lambda: sessionmaker(bind=ENGINE)
+
+    file_created_event = providers.Factory(FileDummyCreatedEvent)
+    file_updated_event = providers.Factory(FileDummyUpdatedEvent)
+    user_created_event = providers.Factory(UserDummyCreatedEvent)
+    user_updated_event = providers.Factory(UserDummyUpdatedEvent)
+    user_auth_code_created_event = providers.Factory(UserAuthCodeDummyCreatedEvent)
+    user_auth_code_updated_event = providers.Factory(UserAuthCodeDummyUpdatedEvent)
 
     file_unit_of_work = providers.Singleton(
-        FileSqlAlchemyUnitOfWork, session_factory=DEFAULT_SESSION_FACTORY
+        FileSqlAlchemyUnitOfWork,
+        session_factory=DEFAULT_SESSION_FACTORY,
     )
     user_unit_of_work = providers.Singleton(
-        UserSqlAlchemyUnitOfWork, session_factory=DEFAULT_SESSION_FACTORY
+        UserSqlAlchemyUnitOfWork,
+        session_factory=DEFAULT_SESSION_FACTORY,
     )
     user_auth_code_unit_of_work = providers.Singleton(
-        UserAuthCodeSqlAlchemyUnitOfWork, session_factory=DEFAULT_SESSION_FACTORY
+        UserAuthCodeSqlAlchemyUnitOfWork,
+        session_factory=DEFAULT_SESSION_FACTORY,
     )
 
     file_service = providers.Factory(
         FileService,
         unit_of_work=file_unit_of_work,
+        created_event=file_created_event,
+        updated_event=file_updated_event,
     )
     user_service = providers.Factory(
         UserService,
         unit_of_work=user_unit_of_work,
+        created_event=user_created_event,
+        updated_event=user_updated_event,
     )
     user_auth_code_service = providers.Factory(
         UserAuthCodeService,
         unit_of_work=user_auth_code_unit_of_work,
+        created_event=user_auth_code_created_event,
+        updated_event=user_auth_code_updated_event,
     )

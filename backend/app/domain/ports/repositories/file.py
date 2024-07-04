@@ -1,27 +1,14 @@
 from abc import ABC, abstractmethod
 
 from app.domain import entities as model
-from app.domain.events.file import FileCreatedEvent, FileUpdatedEvent
-
-file_event_types = FileCreatedEvent | FileUpdatedEvent
 
 
 class FileRepositoryInterface(ABC):
-    def __init__(self) -> None:
-        self.events: list[FileCreatedEvent | FileUpdatedEvent] = []
-
     def add(self, file: model.File) -> None:
         self._add(file)
-        self.events.append(FileCreatedEvent(file))
 
-    def get(self, id_: str) -> model.File | None:
-        file: model.File | None = self._get(id_)
-        return file
-
-    def get_by_id_for_update(self, id_: str) -> model.File | None:
-        file: model.File | None = self._get(id_)
-        if file:
-            self.events.append(FileUpdatedEvent(file))
+    def get(self, uuid: str) -> model.File | None:
+        file: model.File | None = self._get(uuid)
         return file
 
     def get_all(self) -> list[model.File]:
@@ -36,7 +23,7 @@ class FileRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _get(self, id_: str) -> model.File | None:
+    def _get(self, uuid: str) -> model.File | None:
         raise NotImplementedError
 
     @abstractmethod

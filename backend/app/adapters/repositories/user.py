@@ -8,7 +8,10 @@ from app.domain.ports.repositories.user import (
 
 
 class UserSqlAlchemyRepository(UserRepositoryInterface):
-    def __init__(self, session: Session) -> None:
+    def __init__(
+        self,
+        session: Session,
+    ) -> None:
         super().__init__()
         self.session = session
 
@@ -32,7 +35,10 @@ class UserSqlAlchemyRepository(UserRepositoryInterface):
 
 
 class UserAuthCodeSqlAlchemyRepository(UserAuthCodeRepositoryInterface):
-    def __init__(self, session: Session) -> None:
+    def __init__(
+        self,
+        session: Session,
+    ) -> None:
         super().__init__()
         self.session = session
 
@@ -46,8 +52,8 @@ class UserAuthCodeSqlAlchemyRepository(UserAuthCodeRepositoryInterface):
             .first()
         )
 
-    def _get_by_id(self, id_: str) -> model.UserAuthCode | None:
-        return self.session.query(model.UserAuthCode).filter_by(id_=id_).first()
+    def _get_by_uuid(self, uuid: str) -> model.UserAuthCode | None:
+        return self.session.query(model.UserAuthCode).filter_by(uuid=uuid).first()
 
     def _get_all(self) -> list[model.UserAuthCode]:
         return self.session.query(model.UserAuthCode).all()

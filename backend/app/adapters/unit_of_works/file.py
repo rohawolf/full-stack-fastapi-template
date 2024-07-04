@@ -8,7 +8,10 @@ from app.domain.ports.unit_of_works.file import FileUnitOfWorkInterface
 
 
 class FileSqlAlchemyUnitOfWork(FileUnitOfWorkInterface):
-    def __init__(self, session_factory: Callable[[], Any]) -> None:
+    def __init__(
+        self,
+        session_factory: Callable[[], Any],
+    ) -> None:
         self.session_factory = session_factory()
 
     def __enter__(self) -> Self:
@@ -28,3 +31,6 @@ class FileSqlAlchemyUnitOfWork(FileUnitOfWorkInterface):
 
     def rollback(self) -> None:
         self.session.rollback()
+
+    def refresh(self, obj: Any) -> None:
+        self.session.refresh(obj)
