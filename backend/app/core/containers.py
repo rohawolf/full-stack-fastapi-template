@@ -4,10 +4,10 @@ from sqlalchemy.orm import sessionmaker
 
 from app.adapters.events.file import FileDummyCreatedEvent, FileDummyUpdatedEvent
 from app.adapters.events.user import (
-    UserAuthCodeDummyCreatedEvent,
-    UserAuthCodeDummyUpdatedEvent,
-    UserDummyCreatedEvent,
-    UserDummyUpdatedEvent,
+    UserAuthCodeCreatedEvent,
+    UserAuthCodeUpdatedEvent,
+    UserCreatedEvent,
+    UserUpdatedEvent,
 )
 from app.adapters.unit_of_works.file import FileSqlAlchemyUnitOfWork
 from app.adapters.unit_of_works.user import (
@@ -34,10 +34,10 @@ class Container(containers.DeclarativeContainer):
 
     file_created_event = providers.Factory(FileDummyCreatedEvent)
     file_updated_event = providers.Factory(FileDummyUpdatedEvent)
-    user_created_event = providers.Factory(UserDummyCreatedEvent)
-    user_updated_event = providers.Factory(UserDummyUpdatedEvent)
-    user_auth_code_created_event = providers.Factory(UserAuthCodeDummyCreatedEvent)
-    user_auth_code_updated_event = providers.Factory(UserAuthCodeDummyUpdatedEvent)
+    user_created_event = providers.Factory(UserCreatedEvent)
+    user_updated_event = providers.Factory(UserUpdatedEvent)
+    user_auth_code_created_event = providers.Factory(UserAuthCodeCreatedEvent)
+    user_auth_code_updated_event = providers.Factory(UserAuthCodeUpdatedEvent)
 
     file_unit_of_work = providers.Singleton(
         FileSqlAlchemyUnitOfWork,

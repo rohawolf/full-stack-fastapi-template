@@ -3,10 +3,10 @@ from datetime import UTC, datetime
 from pydantic_core import ValidationError
 
 from app.adapters.events.user import (
-    UserAuthCodeDummyCreatedEvent,
-    UserAuthCodeDummyUpdatedEvent,
-    UserDummyCreatedEvent,
-    UserDummyUpdatedEvent,
+    UserAuthCodeCreatedEvent,
+    UserAuthCodeUpdatedEvent,
+    UserCreatedEvent,
+    UserUpdatedEvent,
 )
 from app.adapters.unit_of_works.user import (
     UserAuthCodeSqlAlchemyUnitOfWork,
@@ -38,8 +38,8 @@ class UserService(UserServiceInterface):
     def __init__(
         self,
         unit_of_work: UserSqlAlchemyUnitOfWork,
-        created_event: UserDummyCreatedEvent,
-        updated_event: UserDummyUpdatedEvent,
+        created_event: UserCreatedEvent,
+        updated_event: UserUpdatedEvent,
     ):
         self.unit_of_work = unit_of_work
         self.created_event = created_event
@@ -156,8 +156,8 @@ class UserAuthCodeService(UserAuthCodeServiceInterface):
     def __init__(
         self,
         unit_of_work: UserAuthCodeSqlAlchemyUnitOfWork,
-        created_event: UserAuthCodeDummyCreatedEvent,
-        updated_event: UserAuthCodeDummyUpdatedEvent,
+        created_event: UserAuthCodeCreatedEvent,
+        updated_event: UserAuthCodeUpdatedEvent,
     ):
         self.unit_of_work = unit_of_work
         self.created_event = created_event
