@@ -21,8 +21,14 @@ class UserSqlAlchemyRepository(UserRepositoryInterface):
     def _get(self, email: str) -> model.User | None:
         return self.session.query(model.User).filter_by(email=email).first()
 
-    def _get_all(self) -> list[model.User]:
-        return self.session.query(model.User).all()
+    def _get_all(self, status: str, role: str) -> list[model.User]:
+        qs = self.session.query(model.User)
+        if status:
+            qs = qs.filter_by(status=status)
+
+        if role:
+            qs = qs.filter_by(role=role)
+        return qs.all()
 
     def _search(self, query: str) -> list[model.User]:
         return (
@@ -54,9 +60,6 @@ class UserAuthCodeSqlAlchemyRepository(UserAuthCodeRepositoryInterface):
 
     def _get_by_uuid(self, uuid: str) -> model.UserAuthCode | None:
         return self.session.query(model.UserAuthCode).filter_by(uuid=uuid).first()
-
-    def _get_all(self) -> list[model.UserAuthCode]:
-        return self.session.query(model.UserAuthCode).all()
 
     def _search(self, query: str) -> list[model.UserAuthCode]:
         return (

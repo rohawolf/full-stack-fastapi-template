@@ -11,8 +11,10 @@ class FileRepositoryInterface(ABC):
         file: model.File | None = self._get(uuid)
         return file
 
-    def get_all(self) -> list[model.File]:
-        files: list[model.File] = self._get_all()
+    def get_all(
+        self, category: str, extention: str, is_deleted: bool
+    ) -> list[model.File]:
+        files: list[model.File] = self._get_all(category, extention, is_deleted)
         return files
 
     def search(self, query: str) -> list[model.File]:
@@ -27,7 +29,9 @@ class FileRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _get_all(self) -> list[model.File]:
+    def _get_all(
+        self, category: str, extention: str, is_deleted: bool
+    ) -> list[model.File]:
         raise NotImplementedError
 
     @abstractmethod

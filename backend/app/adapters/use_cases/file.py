@@ -9,6 +9,7 @@ from app.domain.ports.common.responses import (
 from app.domain.ports.use_cases.file import FileServiceInterface
 from app.domain.schemas.file import (
     FileCreateInput,
+    FileListInput,
     FileOutput,
 )
 
@@ -62,9 +63,9 @@ class FileService(FileServiceInterface):
             db_file_ = FileOutput.model_validate(file_)
             return ResponseSuccess(db_file_)
 
-    def _list_files(self) -> ResponseSuccess:
+    def _list_files(self, files: FileListInput) -> ResponseSuccess:
         with self.unit_of_work as tx:
-            files_ = tx.files.get_all()
+            files_ = tx.files.get_all(files.category, files.extension, files.is_deleted)
             db_files = [FileOutput.model_validate(file_) for file_ in files_]
             return ResponseSuccess(db_files)
 

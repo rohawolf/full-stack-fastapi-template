@@ -28,6 +28,7 @@ from app.domain.schemas.user import (
     UserAuthCodeOutput,
     UserAuthCodeUpdateInput,
     UserCreateInput,
+    UserListInput,
     UserLoginInput,
     UserOutput,
     UserUpdateInput,
@@ -89,9 +90,9 @@ class UserService(UserServiceInterface):
                     message="User not found",
                 )
 
-    def _list_users(self) -> ResponseSuccess:
+    def _list_users(self, users: UserListInput) -> ResponseSuccess:
         with self.unit_of_work as tx:
-            users_ = tx.users.get_all()
+            users_ = tx.users.get_all(users.status, users.role)
             db_users = [UserOutput.model_validate(user_) for user_ in users_]
             return ResponseSuccess(db_users)
 

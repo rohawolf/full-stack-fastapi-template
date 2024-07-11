@@ -2,7 +2,7 @@ import abc
 
 from app.domain.ports.common.responses import ResponseFailure, ResponseSuccess
 from app.domain.ports.unit_of_works.file import FileUnitOfWorkInterface
-from app.domain.schemas.file import FileCreateInput
+from app.domain.schemas.file import FileCreateInput, FileListInput
 
 
 class FileServiceInterface(abc.ABC):
@@ -18,8 +18,8 @@ class FileServiceInterface(abc.ABC):
     def retrieve_file(self, id_: str) -> ResponseFailure | ResponseSuccess:
         return self._retrieve_file(id_)
 
-    def list_files(self) -> ResponseSuccess:
-        return self._list_files()
+    def list_files(self, files: FileListInput) -> ResponseSuccess:
+        return self._list_files(files)
 
     def delete_file_by_id(self, id_: str) -> ResponseFailure | ResponseSuccess:
         return self._delete_file_by_id(id_)
@@ -38,7 +38,7 @@ class FileServiceInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _list_files(self) -> ResponseSuccess:
+    def _list_files(self, files: FileListInput) -> ResponseSuccess:
         raise NotImplementedError
 
     @abc.abstractmethod

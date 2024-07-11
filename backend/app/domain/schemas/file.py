@@ -7,8 +7,10 @@ class FileCreateInput(BaseModel):
     url: str
 
 
-class FileUpdateInput(BaseModel):
-    ...
+class FileListInput(BaseModel):
+    category: str
+    extension: str
+    is_deleted: bool
 
 
 class FileOutput(BaseModel):

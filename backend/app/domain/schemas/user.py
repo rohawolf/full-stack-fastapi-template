@@ -29,6 +29,11 @@ class UserLoginInput(BaseModel):
     password: str
 
 
+class UserListInput(BaseModel):
+    status: user_status_type
+    role: user_role_type = "user"
+
+
 class UserUpdateInput(BaseModel):
     password: str
     status: user_status_type

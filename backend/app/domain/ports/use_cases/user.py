@@ -16,6 +16,7 @@ from app.domain.schemas.user import (
     UserAuthCodeOutput,
     UserAuthCodeUpdateInput,
     UserCreateInput,
+    UserListInput,
     UserLoginInput,
     UserOutput,
     UserUpdateInput,
@@ -40,8 +41,8 @@ class UserServiceInterface(abc.ABC):
     def retrieve_user(self, email: str) -> ResponseFailure | ResponseSuccess:
         return self._retrieve_user(email)
 
-    def list_users(self) -> ResponseSuccess:
-        return self._list_users()
+    def list_users(self, users: UserListInput) -> ResponseSuccess:
+        return self._list_users(users)
 
     def update_user_by_email(
         self, email: str, user: UserUpdateInput
@@ -68,7 +69,7 @@ class UserServiceInterface(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _list_users(self) -> ResponseSuccess:
+    def _list_users(self, users: UserListInput) -> ResponseSuccess:
         raise NotImplementedError
 
     @abc.abstractmethod

@@ -18,8 +18,20 @@ class FileSqlAlchemyRepository(FileRepositoryInterface):
     def _get(self, uuid: str) -> model.File | None:
         return self.session.query(model.File).filter_by(uuid=uuid).first()
 
-    def _get_all(self) -> list[model.File]:
-        return self.session.query(model.File).all()
+    def _get_all(
+        self, category: str, extention: str, is_deleted: bool
+    ) -> list[model.File]:
+        qs = self.session.query(model.File)
+        if category:
+            qs = qs.filter_by(category=category)
+
+        if extention:
+            qs = qs.filter_by(extention=extention)
+
+        if is_deleted:
+            qs = qs.filter_by(is_deleted=is_deleted)
+
+        return qs.all()
 
     def _search(self, query: str) -> list[model.File]:
         return (

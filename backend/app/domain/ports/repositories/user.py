@@ -11,8 +11,8 @@ class UserRepositoryInterface(ABC):
         user = self._get(email)
         return user
 
-    def get_all(self) -> list[model.User]:
-        users = self._get_all()
+    def get_all(self, status: str, role: str) -> list[model.User]:
+        users = self._get_all(status, role)
         return users
 
     def search(self, query: str) -> list[model.User]:
@@ -27,7 +27,7 @@ class UserRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _get_all(self) -> list[model.User]:
+    def _get_all(self, status: str, role: str) -> list[model.User]:
         raise NotImplementedError
 
     @abstractmethod
@@ -47,10 +47,6 @@ class UserAuthCodeRepositoryInterface(ABC):
         user_auth_code = self._get_by_uuid(uuid)
         return user_auth_code
 
-    def get_all(self) -> list[model.UserAuthCode]:
-        user_auth_codes = self._get_all()
-        return user_auth_codes
-
     def search(self, query: str) -> list[model.UserAuthCode]:
         return self._search(query)
 
@@ -64,10 +60,6 @@ class UserAuthCodeRepositoryInterface(ABC):
 
     @abstractmethod
     def _get_by_uuid(self, uuid: str) -> model.UserAuthCode | None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def _get_all(self) -> list[model.UserAuthCode]:
         raise NotImplementedError
 
     @abstractmethod
