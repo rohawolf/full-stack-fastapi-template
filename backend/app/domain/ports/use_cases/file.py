@@ -10,10 +10,8 @@ class FileServiceInterface(abc.ABC):
     def __init__(self, unit_of_work: FileUnitOfWorkInterface):
         self.unit_of_work = unit_of_work
 
-    def create(
-        self, file: FileCreateInput, url: str
-    ) -> ResponseFailure | ResponseSuccess:
-        return self._create(file, url)
+    def create(self, file: FileCreateInput) -> ResponseFailure | ResponseSuccess:
+        return self._create(file)
 
     def retrieve_file(self, id_: str) -> ResponseFailure | ResponseSuccess:
         return self._retrieve_file(id_)
@@ -28,9 +26,7 @@ class FileServiceInterface(abc.ABC):
         return self._search_file(query)
 
     @abc.abstractmethod
-    def _create(
-        self, file: FileCreateInput, url: str
-    ) -> ResponseFailure | ResponseSuccess:
+    def _create(self, file: FileCreateInput) -> ResponseFailure | ResponseSuccess:
         raise NotImplementedError
 
     @abc.abstractmethod

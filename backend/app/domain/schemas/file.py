@@ -20,3 +20,6 @@ class FileOutput(BaseModel):
     extension: str
     url: str
     is_deleted: bool
+
+    class Config:
+        from_attributes = True

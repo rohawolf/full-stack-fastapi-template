@@ -25,15 +25,13 @@ class FileService(FileServiceInterface):
         self.created_event = created_event
         self.updated_event = updated_event
 
-    def _create(
-        self, file: FileCreateInput, url: str
-    ) -> ResponseFailure | ResponseSuccess:
+    def _create(self, file: FileCreateInput) -> ResponseFailure | ResponseSuccess:
         try:
             with self.unit_of_work as tx:
                 new_file = file_model_factory(
                     category=file.category,
                     name=file.name,
-                    url=url,
+                    url=file.url,
                 )
                 tx.files.add(new_file)
                 tx.commit()
