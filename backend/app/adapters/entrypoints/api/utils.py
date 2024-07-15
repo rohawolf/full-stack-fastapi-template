@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import emails  # type: ignore
-from fastapi import HTTPException, Request, status
+from fastapi import HTTPException, Request, UploadFile, status
 from fastapi.openapi.models import OAuthFlowPassword, OAuthFlows
 from fastapi.security import OAuth2
 from fastapi.security.utils import get_authorization_scheme_param
@@ -105,3 +105,27 @@ def generate_new_auth_code_email(email_to: str, auth_code: str) -> EmailData:
         },
     )
     return EmailData(html_content=html_content, subject=subject)
+
+
+def save_file_to_static(*, file: UploadFile, category: str) -> str:
+    asset_file_path = "/".join(
+        [
+            "assets",
+            category,
+            str(file.filename),
+        ]
+    )
+
+    real_file_path = Path(__file__).parent.parent / "static" / asset_file_path
+    logging.error(f"saving file to {real_file_path} ... ")
+    try:
+        with real_file_path.open("wb") as buffer:
+            buffer.write(file.file.read())
+
+        return str(asset_file_path)
+    except Exception as e:
+        logging.error(f"Error saving file: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error saving file",
+        )

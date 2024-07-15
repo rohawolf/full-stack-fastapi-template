@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, sta
 from fastapi.encoders import jsonable_encoder
 
 from app.adapters.entrypoints import STATUS_CODES
+from app.adapters.entrypoints.api.utils import save_file_to_static
 from app.core.containers import Container
 from app.domain.entities.file import available_file_categories_and_extensions
 from app.domain.ports.use_cases.file import FileServiceInterface
@@ -40,12 +41,41 @@ def upload_file(
             detail="Invalid extension",
         )
 
-    # TODO: write file to static and return path or url
-    url = ""
+    url = save_file_to_static(file=file, category=category)
 
     response = file_service.create(
         FileCreateInput(category=category, name=file_name, url=url)
     )
+    data = jsonable_encoder(response.value)
+    return Response(
+        content=json.dumps(data),
+        media_type="application/json",
+        status_code=STATUS_CODES[response.type],
+    )
+
+
+@router.get("/{uuid}")
+@inject
+def get_file(
+    uuid: str,
+    file_service: FileServiceInterface = Depends(Provide[Container.file_service]),
+) -> Response:
+    response = file_service.retrieve_file(uuid)
+    data = jsonable_encoder(response.value)
+    return Response(
+        content=json.dumps(data),
+        media_type="application/json",
+        status_code=STATUS_CODES[response.type],
+    )
+
+
+@router.delete("/{uuid}")
+@inject
+def delete_file(
+    uuid: str,
+    file_service: FileServiceInterface = Depends(Provide[Container.file_service]),
+) -> Response:
+    response = file_service.delete_file_by_id(uuid)
     data = jsonable_encoder(response.value)
     return Response(
         content=json.dumps(data),
