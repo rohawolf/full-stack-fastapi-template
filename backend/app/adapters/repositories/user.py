@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 
 from app.domain import entities as model
+from app.domain.entities.user import (
+    user_role_type,
+    user_status_type,
+)
 from app.domain.ports.repositories.user import (
     UserAuthCodeRepositoryInterface,
     UserRepositoryInterface,
@@ -21,13 +25,18 @@ class UserSqlAlchemyRepository(UserRepositoryInterface):
     def _get(self, email: str) -> model.User | None:
         return self.session.query(model.User).filter_by(email=email).first()
 
-    def _get_all(self, status: str, role: str) -> list[model.User]:
+    def _get_all(
+        self,
+        status: user_status_type | None = None,
+        role: user_role_type | None = None,
+    ) -> list[model.User]:
         qs = self.session.query(model.User)
-        if status:
+        if status is not None:
             qs = qs.filter_by(status=status)
 
-        if role:
+        if role is not None:
             qs = qs.filter_by(role=role)
+
         return qs.all()
 
     def _search(self, query: str) -> list[model.User]:

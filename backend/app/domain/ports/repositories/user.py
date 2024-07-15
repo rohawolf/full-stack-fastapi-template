@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 
 from app.domain import entities as model
+from app.domain.entities.user import (
+    user_role_type,
+    user_status_type,
+)
 
 
 class UserRepositoryInterface(ABC):
@@ -11,8 +15,12 @@ class UserRepositoryInterface(ABC):
         user = self._get(email)
         return user
 
-    def get_all(self, status: str, role: str) -> list[model.User]:
-        users = self._get_all(status, role)
+    def get_all(
+        self,
+        status: user_status_type | None = None,
+        role: user_role_type | None = None,
+    ) -> list[model.User]:
+        users = self._get_all(status=status, role=role)
         return users
 
     def search(self, query: str) -> list[model.User]:
@@ -27,7 +35,11 @@ class UserRepositoryInterface(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _get_all(self, status: str, role: str) -> list[model.User]:
+    def _get_all(
+        self,
+        status: user_status_type | None = None,
+        role: user_role_type | None = None,
+    ) -> list[model.User]:
         raise NotImplementedError
 
     @abstractmethod

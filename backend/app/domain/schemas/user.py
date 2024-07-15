@@ -30,8 +30,8 @@ class UserLoginInput(BaseModel):
 
 
 class UserListInput(BaseModel):
-    status: user_status_type
-    role: user_role_type = "user"
+    status: user_status_type | None = None
+    role: user_role_type | None = None
 
 
 class UserUpdateInput(BaseModel):

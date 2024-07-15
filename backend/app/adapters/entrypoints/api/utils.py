@@ -115,17 +115,20 @@ def save_file_to_static(*, file: UploadFile, category: str) -> str:
             str(file.filename),
         ]
     )
-
-    real_file_path = Path(__file__).parent.parent / "static" / asset_file_path
-    logging.error(f"saving file to {real_file_path} ... ")
     try:
-        with real_file_path.open("wb") as buffer:
-            buffer.write(file.file.read())
-
-        return str(asset_file_path)
+        return _save_file_to_local(file, asset_file_path)
     except Exception as e:
         logging.error(f"Error saving file: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error saving file",
         )
+
+
+def _save_file_to_local(file: UploadFile, asset_path: str) -> str:
+    local_file_path = Path(__file__).parent.parent / "static" / asset_path
+    logging.error(f"saving file to local: {local_file_path} ... ")
+    with local_file_path.open("wb") as buffer:
+        buffer.write(file.file.read())
+
+    return str(local_file_path)

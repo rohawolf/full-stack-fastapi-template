@@ -92,8 +92,10 @@ class UserService(UserServiceInterface):
 
     def _list_users(self, users: UserListInput) -> ResponseSuccess:
         with self.unit_of_work as tx:
-            users_ = tx.users.get_all(users.status, users.role)
-            db_users = [UserOutput.model_validate(user_) for user_ in users_]
+            users_ = tx.users.get_all(status=users.status, role=users.role)
+            db_users = []
+            for user_ in users_:
+                db_users.append(UserOutput.model_validate(user_))
             return ResponseSuccess(db_users)
 
     def _update_user_by_email(

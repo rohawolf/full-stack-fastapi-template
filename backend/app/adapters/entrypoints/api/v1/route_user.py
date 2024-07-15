@@ -6,6 +6,10 @@ from fastapi.encoders import jsonable_encoder
 
 from app.adapters.entrypoints import STATUS_CODES
 from app.core.containers import Container
+from app.domain.entities.user import (
+    user_role_type,
+    user_status_type,
+)
 from app.domain.ports.use_cases.user import (
     UserAuthCodeServiceInterface,
     UserServiceInterface,
@@ -15,10 +19,28 @@ from app.domain.schemas.user import (
     UserAuthCodeOutput,
     UserAuthCodeUpdateInput,
     UserCreateInput,
+    UserListInput,
     UserUpdateInput,
 )
 
 user_router, authentication_router = APIRouter(), APIRouter()
+
+
+@user_router.get("/list")
+@inject
+def list_user(
+    status: user_status_type | None = None,
+    role: user_role_type | None = None,
+    user_service: UserServiceInterface = Depends(Provide[Container.user_service]),
+) -> Response:
+    users = UserListInput(status=status, role=role)
+    response = user_service.list_users(users)
+    data = jsonable_encoder(response.value)
+    return Response(
+        content=json.dumps(data),
+        media_type="application/json",
+        status_code=STATUS_CODES[response.type],
+    )
 
 
 @user_router.post("/")
