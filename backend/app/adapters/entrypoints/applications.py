@@ -41,6 +41,3 @@ def start_application() -> FastAPI:
     app_.include_router(api_router, prefix=settings.API_V1_STR)
     start_mappers()
     return app_
-
-
-app = start_application()

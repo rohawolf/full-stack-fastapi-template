@@ -1,16 +1,9 @@
-from sqlmodel import Session
-
-from app.adapters.db.utils import engine, init_superuser, logger
-
-
-def init() -> None:
-    with Session(engine) as session:
-        init_superuser(session)
+from app.adapters.db.utils import init_superuser, logger
 
 
 def main() -> None:
     logger.info("Creating initial data")
-    init()
+    init_superuser()
     logger.info("Initial data created")
 
 

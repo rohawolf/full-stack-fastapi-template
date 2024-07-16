@@ -1,6 +1,6 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.10
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11
 
-WORKDIR /app/
+WORKDIR /code/
 
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
@@ -9,20 +9,22 @@ RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python
     poetry config virtualenvs.create false
 
 # Copy poetry.lock* in case it doesn't exist in the repo
-COPY ./pyproject.toml ./poetry.lock* /app/
+COPY ./pyproject.toml ./poetry.lock* /code/
 
 # Allow installing dev dependencies to run tests
 ARG INSTALL_DEV=false
 RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; else poetry install --no-root --only main ; fi"
 
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/code
 
-COPY ./scripts/ /app/
+COPY ./scripts/ /code/
 
-COPY ./alembic.ini /app/
+COPY ./alembic.ini /code/
 
-COPY ./prestart.sh /app/
+COPY ./prestart.sh /code/
 
-COPY ./tests-start.sh /app/
+COPY ./tests-start.sh /code/
 
-COPY ./app /app/app
+COPY ./app /code/app
+
+CMD ["uvicorn", "app.main:app"]

@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     SENTRY_DSN: HttpUrl | None = None
 
     # USE_SQLITE: bool = False
-    USE_SQLITE: bool = True
+    USE_SQLITE: bool = False
     POSTGRES_SERVER: str
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str
@@ -130,4 +130,4 @@ settings = Settings()  # type: ignore
 def get_database_uri() -> str:  # pragma: no cover
     if settings.USE_SQLITE:
         return "sqlite:///./test.db"
-    return str(settings.SQLALCHEMY_DATABASE_URI)
+    return settings.SQLALCHEMY_DATABASE_URI.unicode_string()

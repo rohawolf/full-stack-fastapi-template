@@ -5,7 +5,7 @@ from sqlalchemy import Engine
 from sqlmodel import Session, create_engine, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.adapters.repositories.user import UserSqlAlchemyRepository
+from app.adapters.db.orm import users
 from app.core.common.hashing import get_password_hash
 from app.core.config import get_database_uri, settings
 from app.domain import entities as model
@@ -23,7 +23,7 @@ engine = create_engine(get_database_uri())
 # for more details: https://github.com/tiangolo/full-stack-fastapi-template/issues/28
 
 
-def init_superuser(session: Session) -> None:
+def init_superuser() -> None:
     # Tables should be created with Alembic migrations
     # But if you don't want to use migrations, create
     # the tables un-commenting the next lines
@@ -33,32 +33,31 @@ def init_superuser(session: Session) -> None:
     # This works because the models are already imported and registered from app.models
     # SQLModel.metadata.create_all(engine)
 
-    users = UserSqlAlchemyRepository(session)
-
-    user_ = UserCreateInput(
-        email=settings.FIRST_SUPERUSER,
-        password=settings.FIRST_SUPERUSER_PASSWORD,
-        username=settings.FIRST_SUPERUSER.split("@")[0],
-        date_of_birth=date(1989, 3, 20),
-        gender="male",
-        phone_number="",
-        resume_file_id="",
-        role="admin",
-    )
-    user = users.get(email=user_.email)
-    if not user:
-        new_user = model.user_model_factory(
-            email=user_.email,
-            hashed_password=get_password_hash(user_.password),
-            username=user_.username,
-            date_of_birth=user_.date_of_birth,
-            gender=user_.gender,
-            phone_number=user_.phone_number,
-            resume_file_id=user_.resume_file_id,
-            role=user_.role,
+    with Session(engine) as tx:
+        user_ = UserCreateInput(
+            email=settings.FIRST_SUPERUSER,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            username=settings.FIRST_SUPERUSER.split("@")[0],
+            date_of_birth=date(1989, 3, 20),
+            gender="male",
+            phone_number="",
+            resume_file_id="",
+            role="admin",
         )
-        users.add(new_user)
-    session.commit()
+        user = users.select().where(users.c.email == user_.email)  # noqa
+        if user is None:
+            new_user = model.user_model_factory(
+                email=user_.email,
+                hashed_password=get_password_hash(user_.password),
+                username=user_.username,
+                date_of_birth=user_.date_of_birth,
+                gender=user_.gender,
+                phone_number=user_.phone_number,
+                resume_file_id=user_.resume_file_id,
+                role=user_.role,
+            )
+            users.insert().values(new_user.to_dict())
+        tx.commit()
 
 
 max_tries = 60 * 5  # 5 minutes
