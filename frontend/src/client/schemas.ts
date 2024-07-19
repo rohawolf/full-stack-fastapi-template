@@ -1,3 +1,12 @@
+export const $Body_files_upload_file = {
+	properties: {
+		file: {
+			type: 'file',
+			isRequired: true,
+		},
+	},
+} as const;
+
 export const $Body_login_login_access_token = {
 	properties: {
 		grant_type: {
@@ -26,19 +35,25 @@ export const $Body_login_login_access_token = {
 		},
 		client_id: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				}
+			],
 		},
 		client_secret: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				}
+			],
 		},
 	},
 } as const;
@@ -54,6 +69,59 @@ export const $HTTPValidationError = {
 	},
 } as const;
 
+export const $Token = {
+	properties: {
+		access_token: {
+			type: 'string',
+			isRequired: true,
+		},
+		token_type: {
+			type: 'string',
+			default: 'bearer',
+		},
+	},
+} as const;
+
+export const $UserAuthCodeCreateInput = {
+	properties: {
+		email: {
+			type: 'string',
+			isRequired: true,
+		},
+	},
+} as const;
+
+export const $UserAuthCodeOutput = {
+	properties: {
+		uuid: {
+			type: 'string',
+			isRequired: true,
+		},
+		email: {
+			type: 'string',
+			isRequired: true,
+		},
+		auth_code: {
+			type: 'string',
+			isRequired: true,
+		},
+		status: {
+			type: 'one-of',
+			contains: [
+				{
+					type: 'string',
+					enum: ['pending', 'authorized', 'expired'],
+				},
+			],
+		},
+		expired_at: {
+			type: 'datetime',
+			isRequired: true,
+		},
+	},
+} as const;
+
+
 export const $ItemCreate = {
 	properties: {
 		title: {
@@ -62,11 +130,14 @@ export const $ItemCreate = {
 		},
 		description: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 	},
 } as const;
@@ -79,11 +150,14 @@ export const $ItemPublic = {
 		},
 		description: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		id: {
 			type: 'number',
@@ -100,19 +174,25 @@ export const $ItemUpdate = {
 	properties: {
 		title: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		description: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 	},
 } as const;
@@ -155,18 +235,6 @@ export const $NewPassword = {
 	},
 } as const;
 
-export const $Token = {
-	properties: {
-		access_token: {
-			type: 'string',
-			isRequired: true,
-		},
-		token_type: {
-			type: 'string',
-			default: 'bearer',
-		},
-	},
-} as const;
 
 export const $UpdatePassword = {
 	properties: {
@@ -197,11 +265,14 @@ export const $UserCreate = {
 		},
 		full_name: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		password: {
 			type: 'string',
@@ -226,11 +297,14 @@ export const $UserPublic = {
 		},
 		full_name: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		id: {
 			type: 'number',
@@ -251,11 +325,14 @@ export const $UserRegister = {
 		},
 		full_name: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 	},
 } as const;
@@ -264,11 +341,14 @@ export const $UserUpdate = {
 	properties: {
 		email: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		is_active: {
 			type: 'boolean',
@@ -280,19 +360,25 @@ export const $UserUpdate = {
 		},
 		full_name: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		password: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 	},
 } as const;
@@ -301,19 +387,25 @@ export const $UserUpdateMe = {
 	properties: {
 		full_name: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 		email: {
 			type: 'any-of',
-			contains: [{
-				type: 'string',
-			}, {
-				type: 'null',
-			}],
+			contains: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'null',
+				},
+			],
 		},
 	},
 } as const;
@@ -340,11 +432,14 @@ export const $ValidationError = {
 			type: 'array',
 			contains: {
 				type: 'any-of',
-				contains: [{
-					type: 'string',
-				}, {
-					type: 'number',
-				}],
+				contains: [
+					{
+						type: 'string',
+					}, 
+					{
+						type: 'number',
+					},
+				],
 			},
 			isRequired: true,
 		},

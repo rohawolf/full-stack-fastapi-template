@@ -1,8 +1,8 @@
 import logging
 from datetime import date
 
-from sqlalchemy import Engine
-from sqlmodel import Session, create_engine, select
+from sqlalchemy import Engine, insert, select
+from sqlmodel import create_engine
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.adapters.db.orm import users
@@ -33,7 +33,7 @@ def init_superuser() -> None:
     # This works because the models are already imported and registered from app.models
     # SQLModel.metadata.create_all(engine)
 
-    with Session(engine) as tx:
+    with engine.connect() as conn:
         user_ = UserCreateInput(
             email=settings.FIRST_SUPERUSER,
             password=settings.FIRST_SUPERUSER_PASSWORD,
@@ -44,7 +44,7 @@ def init_superuser() -> None:
             resume_file_id="",
             role="admin",
         )
-        user = users.select().where(users.c.email == user_.email)  # noqa
+        user = conn.execute(select(users).where(users.c.email == user_.email)).first()  # noqa
         if user is None:
             new_user = model.user_model_factory(
                 email=user_.email,
@@ -56,8 +56,12 @@ def init_superuser() -> None:
                 resume_file_id=user_.resume_file_id,
                 role=user_.role,
             )
-            users.insert().values(new_user.to_dict())
-        tx.commit()
+            conn.execute(insert(users).values(new_user.to_dict()))  # noqa
+            conn.commit()
+            user = conn.execute(
+                select(users).where(users.c.email == user_.email)
+            ).first()  # noqa
+        logger.info(f"superuser {user} created")
 
 
 max_tries = 60 * 5  # 5 minutes
@@ -72,9 +76,9 @@ wait_seconds = 1
 )
 def check_db_connected(db_engine: Engine) -> None:
     try:
-        with Session(db_engine) as session:
+        with db_engine.connect() as conn:
             # Try to create session to check if DB is awake
-            session.exec(select(1))
+            conn.execute(select(1))
     except Exception as e:
         logger.error(e)
         raise e

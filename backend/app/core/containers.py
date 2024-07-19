@@ -18,9 +18,7 @@ from app.adapters.use_cases.file import FileService
 from app.adapters.use_cases.user import UserAuthCodeService, UserService
 from app.core import config
 
-ENGINE = create_engine(
-    config.get_database_uri(), connect_args={"check_same_thread": False}
-)
+ENGINE = create_engine(config.get_database_uri())
 
 
 class Container(containers.DeclarativeContainer):
